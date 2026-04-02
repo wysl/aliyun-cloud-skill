@@ -1,0 +1,26 @@
+# Account secrets and data
+accounts/*/secrets/runtime.env
+accounts/*/secrets/cache.json
+accounts/*/list/*.json
+accounts/*/reports/*
+
+# Compiled binaries
+aliyunctl
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test and verification outputs
+.verify-*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
