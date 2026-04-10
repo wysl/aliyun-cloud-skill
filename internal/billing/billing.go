@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"aliyun-cloud-monitor/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/aliyuncli"
 )
 
 type CategorySummary struct {

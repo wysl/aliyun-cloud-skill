@@ -1,4 +1,4 @@
-# Aliyun Cloud Monitor
+# Aliyun Cloud Skill
 
 ## 更新记录
 
@@ -24,7 +24,7 @@ go run ./scripts/aliyunctl.go <command> ...
 ## 当前目录结构
 
 ```text
-aliyun-cloud-monitor/
+aliyun-cloud-skill/
 ├── SKILL.md                     # Skill 定义、触发说明、核心用法
 ├── README.md                    # 项目结构与实现说明（本文件）
 ├── go.mod                       # Go 模块定义

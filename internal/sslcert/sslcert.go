@@ -1,7 +1,7 @@
 package sslcert
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/aliyuncli"
 	"encoding/json"
 	"fmt"
 	"sort"

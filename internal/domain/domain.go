@@ -1,8 +1,8 @@
 package domain
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
-	"aliyun-cloud-monitor/internal/sslcert"
+	"aliyun-cloud-skill/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/sslcert"
 	"encoding/json"
 	"fmt"
 	"sort"

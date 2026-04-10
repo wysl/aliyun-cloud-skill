@@ -1,4 +1,4 @@
-使用 aliyun-cloud-monitor skill，为以下对象生成一份“阿里云资源使用情况管理层简版 HTML 报告”：
+使用 aliyun-cloud-skill skill，为以下对象生成一份“阿里云资源使用情况管理层简版 HTML 报告”：
 
 - 公司/客户名称：<公司名>
 - 账号名称：<account>
@@ -11,7 +11,7 @@
 
 执行规则：
 1. 先列出报告章节清单。
-2. 再逐项调用 aliyun-cloud-monitor skill 查询。
+2. 再逐项调用 aliyun-cloud-skill skill 查询。
 3. 任何章节都不能省略。
 4. 某项查不到时，必须保留章节并写“未获取到 + 原因”。
 5. 所有查询完成后，先输出数据完整性检查表，再生成最终 HTML。

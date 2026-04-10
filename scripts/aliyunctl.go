@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"aliyun-cloud-monitor/internal/app"
+	"aliyun-cloud-skill/internal/app"
 )
 
 func main() {

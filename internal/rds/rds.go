@@ -1,8 +1,8 @@
 package rds
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
-	"aliyun-cloud-monitor/internal/prom"
+	"aliyun-cloud-skill/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/prom"
 	"encoding/json"
 	"fmt"
 	"strings"

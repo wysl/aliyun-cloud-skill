@@ -1,9 +1,9 @@
 ---
-name: aliyun-cloud-monitor
+name: aliyun-cloud-skill
 description: Use for Alibaba Cloud monitoring and account-isolated operations. Supports account initialization, permission fixing, secret fingerprinting, resource inventory refresh, billing summaries, account balance queries, ECS/RDS/PolarDB/ALB operations, resource usage monitoring (CPU/memory/disk/IOPS/bandwidth/connections/QPS/error rate), security group management (list security groups with bound instances, query security group rules, add ingress/egress rules, join/leave security group), ALB ACL management (list ACLs, list ACL entries, query listener ACL config), VPC management (list VPCs, query VPC detail with vswitches/route tables/route entries), SMS sending statistics (24h volume, success rate), domain management with SSL certificates, CDN usage statistics (traffic, source traffic, hit rate), CDN auto warmup from recent OSS uploads, OSS bucket usage statistics (storage, object count, traffic, request count), Prometheus/Grafana queries, SSL checks, resource package checks, OSS inspection, CDN operations, and SLS queries. Use when auditing or operating Aliyun accounts isolated under accounts/<account>/.
 ---
 
-# Aliyun Cloud Monitor
+# Aliyun Cloud Skill
 
 Use this skill for Alibaba Cloud monitoring with isolated per-account configuration.
 

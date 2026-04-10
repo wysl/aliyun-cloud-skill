@@ -1,7 +1,7 @@
 package slsmod
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/aliyuncli"
 	"encoding/json"
 	"fmt"
 	"strings"

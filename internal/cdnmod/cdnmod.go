@@ -1,8 +1,8 @@
 package cdnmod
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
-	"aliyun-cloud-monitor/internal/ossmod"
+	"aliyun-cloud-skill/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/ossmod"
 	"encoding/json"
 	"fmt"
 	"strings"

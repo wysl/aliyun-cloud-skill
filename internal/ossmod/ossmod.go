@@ -1,8 +1,8 @@
 package ossmod
 
 import (
-	"aliyun-cloud-monitor/internal/aliyuncli"
-	"aliyun-cloud-monitor/internal/prom"
+	"aliyun-cloud-skill/internal/aliyuncli"
+	"aliyun-cloud-skill/internal/prom"
 	"bufio"
 	"encoding/json"
 	"fmt"
