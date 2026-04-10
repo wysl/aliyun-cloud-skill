@@ -45,6 +45,95 @@ func QueryIPs(env map[string]string, project, logstore, from, to, query string) 
 	return string(b), nil
 }
 
+// CreateProject creates a new SLS project
+func CreateProject(env map[string]string, projectName, description string) (string, error) {
+	body := map[string]string{
+		"projectName": projectName,
+		"description": description,
+	}
+	bodyJson, _ := json.Marshal(body)
+	return runAliyunRaw([]string{"sls", "CreateProject", "--body", string(bodyJson)}, env)
+}
+
+// CreateLogStore creates a new logstore in a project
+func CreateLogStore(env map[string]string, project, logstoreName string, ttl, shardCount int) (string, error) {
+	body := map[string]any{
+		"logstoreName": logstoreName,
+		"ttl":          ttl,
+		"shardCount":   shardCount,
+		"autoSplit":    true,
+		"maxSplitShard": shardCount * 2,
+		"telemetryType": "None",
+	}
+	bodyJson, _ := json.Marshal(body)
+	return runAliyunRaw([]string{"sls", "CreateLogStore", "--project", project, "--body", string(bodyJson)}, env)
+}
+
+// ListMachineGroup lists machine groups in a project
+func ListMachineGroup(env map[string]string, project string) (string, error) {
+	return runAliyunRaw([]string{"sls", "ListMachineGroup", "--project", project}, env)
+}
+
+// GetMachineGroup gets machine group details
+func GetMachineGroup(env map[string]string, project, machineGroupName string) (string, error) {
+	return runAliyunRaw([]string{"sls", "GetMachineGroup", "--project", project, "--machineGroup", machineGroupName}, env)
+}
+
+// CreateMachineGroup creates a machine group
+func CreateMachineGroup(env map[string]string, project, machineGroupName string, machineList []string) (string, error) {
+	body := map[string]any{
+		"groupName":            machineGroupName,
+		"machineIdentifyType":  "ip",
+		"machineList":          machineList,
+		"groupType":            "",
+		"groupAttribute":       map[string]string{},
+	}
+	bodyJson, _ := json.Marshal(body)
+	return runAliyunRaw([]string{"sls", "CreateMachineGroup", "--project", project, "--body", string(bodyJson)}, env)
+}
+
+// CreateConfig creates a logtail config for file collection
+func CreateConfig(env map[string]string, project, configName, logPath, logPattern, logstore string) (string, error) {
+	body := map[string]any{
+		"configName": configName,
+		"inputType":  "file",
+		"inputDetail": map[string]any{
+			"logType":         "json_log",
+			"logPath":         logPath,
+			"filePattern":     logPattern,
+			"localStorage":    true,
+			"logBeginRegex":   ".*",
+			"fileEncoding":    "utf8",
+			"discardUnmatch":  false,
+			"maxDepth":        10,
+			"topicFormat":     "none",
+			"preserve":        true,
+			"preserveDepth":   0,
+			"tailExisted":     false,
+			"dockerFile":      false,
+			"enableRawLog":    false,
+			"adjustTimezone":  false,
+			"discardNonUtf8":  false,
+			"filterKey":       []string{},
+			"filterRegex":     []string{},
+			"sensitive_keys":  []string{},
+			"timeKey":         "@timestamp",
+			"timeFormat":      "%Y-%m-%dT%H:%M:%S.%f%z",
+		},
+		"outputType": "LogService",
+		"outputDetail": map[string]string{
+			"logstoreName": logstore,
+		},
+	}
+	bodyJson, _ := json.Marshal(body)
+	return runAliyunRaw([]string{"sls", "CreateConfig", "--project", project, "--body", string(bodyJson)}, env)
+}
+
+// ApplyConfigToMachineGroup applies a config to a machine group
+func ApplyConfigToMachineGroup(env map[string]string, project, machineGroupName, configName string) (string, error) {
+	return runAliyunRaw([]string{"sls", "ApplyConfigToMachineGroup", "--project", project, "--machineGroup", machineGroupName, "--configName", configName}, env)
+}
+
 func runAliyunRaw(args []string, env map[string]string) (string, error) {
 	return aliyuncli.RunRaw(args, env)
 }

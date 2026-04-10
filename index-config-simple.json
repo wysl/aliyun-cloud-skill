@@ -1,0 +1,7 @@
+{
+  "line": {
+    "token": [",", " ", ":", "=", ";"],
+    "caseSensitive": false,
+    "chn": false
+  }
+}

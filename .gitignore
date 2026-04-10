@@ -4,6 +4,11 @@ accounts/*/secrets/cache.json
 accounts/*/list/*.json
 accounts/*/reports/*
 
+# Real account directories (keep only example)
+accounts/凌数引擎/
+accounts/*/
+!accounts/example/
+
 # Compiled binaries
 aliyunctl
 *.exe

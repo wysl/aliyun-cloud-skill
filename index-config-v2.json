@@ -1,0 +1,16 @@
+{
+  "ttl": 30,
+  "line": {
+    "caseSensitive": false,
+    "chn": true,
+    "token": [",", " ", ":", "=", ";", "(", ")", "[", "]", "{", "}"]
+  },
+  "keys": {
+    "content": {
+      "type": "text",
+      "caseSensitive": false,
+      "chn": true,
+      "token": [",", " ", ":", "=", ";", "(", ")", "[", "]", "{", "}"]
+    }
+  }
+}

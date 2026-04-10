@@ -84,7 +84,7 @@ go run ./scripts/aliyunctl.go prom-query --account prod-main --query 'up{job="ec
 - List domains with expiration dates and SSL certificates
 - Query CDN usage statistics (traffic, source traffic, cache hit rate)
 - Auto warmup CDN from recent OSS uploads
-- Query OSS bucket usage statistics (storage, object count)
+- Query OSS bucket usage statistics (storage, object count, traffic, request count)
 - Query billing, ECS, RDS, Prometheus, SSL, resource package, OSS, CDN, and SLS data
 - Return either concise summaries or JSON depending on the command
 - Read `references/commands.md` for the complete command list
@@ -97,8 +97,11 @@ Collect in this order:
 3. SK
 4. region list
 5. optional Grafana URL
-6. optional Grafana admin user/password
-7. optional Feishu webhook
+6. optional Grafana admin user
+7. optional Grafana admin password
+8. optional Feishu webhook
+
+Store Grafana connection info as account-scoped config only in `accounts/<account>/secrets/runtime.env`. Do not record real values in Markdown or code files.
 
 Then:
 1. run `init-account`
@@ -107,6 +110,34 @@ Then:
 4. run `hash-secrets`
 
 Read `references/onboarding-flow.md` for the exact collection order.
+
+## Alert Thresholds
+
+When reporting resource status, apply these thresholds:
+
+| Resource Type | Metric | Threshold | Action |
+|---------------|--------|-----------|--------|
+| ECS | CPU/Memory/Disk | ≥ 60% | Flag for attention |
+| RDS | CPU/Memory/IOPS | ≥ 60% | Flag for attention |
+| PolarDB | CPU/Memory/IOPS | ≥ 60% | Flag for attention |
+| SSL Certificate (Test) | Expiration | Any | Ignore |
+| SSL Certificate (Production) | ≤ 30 days | Flag for attention |
+| Resource Package | Remaining | ≤ 10% or ≤ 30 days | Flag for attention |
+
+**Current thresholds (user-defined):**
+- ECS/数据库使用率 < 60%：忽略，不关注
+- 测试证书：忽略，不关注
+- 正式证书：30天内到期才需要关注
+
+## Report prompt templates
+
+Reusable HTML report prompt templates are stored under `prompt_template/`:
+
+- `prompt_template/management_html_report_prompt.txt` — management-facing summary report template focused on cost, scale, risks, and executive highlights.
+- `prompt_template/ops_html_report_prompt.txt` — operations-facing detailed inspection report template focused on inventory, metrics, failures, and troubleshooting context.
+- `prompt_template/full_html_report_prompt.txt` — general-purpose full report template for broad account reviews when neither a management-only nor an ops-only angle is sufficient.
+
+When generating HTML reports, prefer reusing one of these templates instead of drafting a new prompt from scratch. Keep all sections in the final HTML even when some data is unavailable, and mark missing sections explicitly with the reason.
 
 ## Notes
 

@@ -71,8 +71,8 @@ func List(env map[string]string) ([]Domain, error) {
 			daysLeft = int(t.Sub(now).Hours() / 24)
 		}
 
-		// Map domain status
-		status := mapDomainStatus(it.DomainStatus)
+		// Map domain status, using DomainAuditStatus to correct false "审核中"
+		status := mapDomainStatus(it.DomainStatus, it.DomainAuditStatus)
 
 		res = append(res, Domain{
 			Name:       it.DomainName,
@@ -149,7 +149,12 @@ func ListWithCerts(env map[string]string, showSize int) ([]DomainWithCert, error
 	return res, nil
 }
 
-func mapDomainStatus(status string) string {
+func mapDomainStatus(status string, auditStatus string) string {
+	// DomainAuditStatus takes precedence: if audit succeeded, domain is usable regardless of DomainStatus
+	if strings.EqualFold(auditStatus, "SUCCEED") {
+		return "正常"
+	}
+
 	switch status {
 	case "1":
 		return "正常"

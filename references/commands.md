@@ -100,7 +100,7 @@ go run ./scripts/aliyunctl.go <command> ...
 - `oss-info` — show OSS bucket info
 - `oss-ls` — list OSS objects
 - `oss-recent` — list recent OSS objects
-- `oss-usage` — show OSS bucket usage (storage, object count)
+- `oss-usage` — show OSS bucket usage (storage, object count, traffic, request count)
 
 ## CDN
 
@@ -121,6 +121,13 @@ go run ./scripts/aliyunctl.go <command> ...
 - `sls-update-index` — update SLS index with `content` field
 - `sls-get-logs` — get raw SLS logs
 - `sls-query-ips` — extract/query IP information from SLS logs
+- `sls-create-project` — create SLS project (--account, --name, --desc)
+- `sls-create-logstore` — create SLS logstore (--account, --project, --name, --ttl, --shards)
+- `sls-list-machine-group` — list SLS machine groups (--account, --project)
+- `sls-get-machine-group` — get SLS machine group detail (--account, --project, --name)
+- `sls-create-machine-group` — create SLS machine group (--account, --project, --name, --machines)
+- `sls-create-config` — create SLS logtail config (--account, --project, --name, --path, --pattern, --logstore)
+- `sls-apply-config` — apply config to machine group (--account, --project, --group, --config)
 
 ## Notes
 

@@ -1,0 +1,178 @@
+使用 aliyun-cloud-monitor skill，为以下对象生成一份“阿里云资源使用情况运维巡检详细版 HTML 报告”：
+
+- 公司/客户名称：<公司名>
+- 账号名称：<account>
+- 报告周期：<YYYY-MM 或 近7天/近30天>
+- 输出文件：<文件名>.html
+
+目标：
+生成一份适合运维/SRE/云管理员阅读的详细 HTML 巡检报告，要求尽量完整覆盖当前 skill 的只读查询与监控能力。
+报告必须包含资源清单、核心指标、异常项、失败项、缺失项、命令清单。
+
+执行规则：
+1. 先列出完整章节清单。
+2. 再逐章调用 aliyun-cloud-monitor skill 查询。
+3. 每一章都必须记录：
+   - 执行命令
+   - 是否成功
+   - 返回是否为空
+   - 失败原因
+4. 任何章节禁止静默省略。
+5. 任何失败、无权限、无数据、Grafana 缺失，都必须保留章节并写明原因。
+6. 查询结束后先输出数据完整性检查表，再输出最终 HTML。
+7. 不允许虚构任何字段或数值。
+
+报告章节至少包括：
+1. 报告说明
+2. 账户与区域信息
+3. 账单与余额
+4. 资源总览统计
+5. ECS 资源清单
+6. ECS 使用率监控
+7. RDS 资源清单
+8. RDS 使用率与性能
+9. RDS 备份情况
+10. PolarDB 资源清单
+11. PolarDB 使用率监控
+12. ALB 资源清单
+13. ALB 使用率监控
+14. ALB ACL / 监听器 ACL
+15. VPC / VSwitch / RouteTable
+16. VSwitch 资源分布
+17. 安全组清单
+18. 安全组规则检查
+19. 域名清单
+20. SSL 证书状态
+21. 资源包状态
+22. OSS Bucket 清单
+23. OSS 使用情况
+24. CDN 域名清单
+25. CDN 流量 / 带宽 / 命中率 / 回源
+26. SLS 项目 / Logstore 概览
+27. 风险与异常汇总
+28. 数据完整性检查表
+29. 附录：执行命令清单
+
+各章节建议命令：
+
+- 账户与区域信息
+  - 结合 runtime.env 中账号/区域信息
+  - 说明可用数据源类型
+
+- 账单与余额
+  - account-balance
+  - bill-summary
+
+- 资源总览统计
+  - 基于各产品 list 类命令汇总总量
+
+- ECS 资源清单
+  - ecs-list
+  - 必要时 ecs-detail
+
+- ECS 使用率监控
+  - ecs-usage
+  - CPU / 内存 / 磁盘
+  - 标出高使用率实例
+
+- RDS 资源清单
+  - rds-list
+  - 必要时 rds-detail
+
+- RDS 使用率与性能
+  - rds-usage
+  - 必要时 rds-performance
+
+- RDS 备份情况
+  - rds-list-backups
+
+- PolarDB 资源清单
+  - polardb-list
+
+- PolarDB 使用率监控
+  - polardb-usage
+
+- ALB 资源清单
+  - alb-list
+
+- ALB 使用率监控
+  - alb-usage
+  - 带宽 / 活跃连接 / QPS / 错误率
+
+- ALB ACL / 监听器 ACL
+  - alb-acl-list
+  - alb-acl-entries
+  - alb-listener-acl
+
+- VPC / VSwitch / RouteTable
+  - vpc-list
+  - vswitch-list
+  - routetable-list
+  - 必要时 vpc-detail
+
+- VSwitch 资源分布
+  - vswitch-resources
+
+- 安全组清单
+  - sg-list
+
+- 安全组规则检查
+  - sg-rules
+  - 可按重点安全组展开
+
+- 域名清单
+  - domain-list
+
+- SSL 证书状态
+  - ssl-list
+  - ssl-expiring
+  - ssl-summary
+
+- 资源包状态
+  - resource-package-list
+  - resource-package-expiring
+  - resource-package-summary
+
+- OSS Bucket 清单
+  - oss-list
+  - 必要时 oss-info
+
+- OSS 使用情况
+  - oss-usage
+  - 必须展示：存储量、对象数、流量、请求量
+  - 必要时 oss-recent
+
+- CDN 域名清单
+  - cdn-list
+  - 必要时 cdn-detail
+
+- CDN 流量 / 带宽 / 命中率 / 回源
+  - cdn-traffic
+  - cdn-bandwidth
+  - cdn-usage
+
+- SLS 项目 / Logstore 概览
+  - sls-list-projects
+  - 必要时 sls-list-logstores / sls-get-index / sls-get-logs / sls-query-ips
+
+- 风险与异常汇总
+  - 汇总高使用率资源
+  - 即将到期证书
+  - 即将到期资源包
+  - 安全组高风险规则
+  - 数据缺失项
+  - 失败项
+
+输出顺序必须严格为：
+A. 章节清单
+B. 逐章查询过程
+C. 数据完整性检查表
+D. 最终 HTML
+
+最终 HTML 风格要求：
+- 偏巡检/审计风格
+- 每章保留较完整表格
+- 写清楚资源名称、ID、区域、关键指标
+- 对失败章节写“未获取到 + 原因”
+- 文末附完整命令清单
+- 不要省略章节

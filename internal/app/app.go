@@ -193,6 +193,20 @@ func (a App) Run(args []string) int {
 		err = a.SLSGetLogs(args[1:])
 	case "sls-query-ips":
 		err = a.SLSQueryIPs(args[1:])
+	case "sls-create-project":
+		err = a.SLSCreateProject(args[1:])
+	case "sls-create-logstore":
+		err = a.SLSCreateLogstore(args[1:])
+	case "sls-list-machine-group":
+		err = a.SLSListMachineGroup(args[1:])
+	case "sls-get-machine-group":
+		err = a.SLSGetMachineGroup(args[1:])
+	case "sls-create-machine-group":
+		err = a.SLSCreateMachineGroup(args[1:])
+	case "sls-create-config":
+		err = a.SLSCreateConfig(args[1:])
+	case "sls-apply-config":
+		err = a.SLSApplyConfig(args[1:])
 	default:
 		Usage()
 		return 2
@@ -234,7 +248,7 @@ Commands:
   polardb-list     List PolarDB clusters
   polardb-usage    Show PolarDB resource usage (CPU, memory, IOPS)
   alb-list         List ALB instances
-  alb-usage        Show ALB resource usage (bandwidth, connections, error rate)
+  alb-usage        Show ALB resource usage (bandwidth, active connections, QPS, error rate)
   alb-acl-list     List ALB ACLs
   alb-acl-entries  List entries in an ACL
   alb-listener-acl Show listener ACL configuration
@@ -261,11 +275,11 @@ Commands:
   oss-info         Show OSS bucket info
   oss-ls           List OSS objects
   oss-recent       List recent OSS objects
-  oss-usage        Show OSS bucket usage (storage, traffic, request count)
+  oss-usage        Show OSS bucket usage (storage, object count, traffic, request count)
   cdn-list         List CDN domains
   cdn-detail       Show CDN domain detail
   cdn-traffic      Show CDN traffic data
-  cdn-usage        Show CDN usage statistics (traffic, src traffic, hit rate)
+  cdn-usage        Show CDN usage statistics (traffic, source traffic, cache hit rate)
   cdn-bandwidth    Show CDN bandwidth data
   cdn-refresh      Refresh CDN paths
   cdn-push         Push CDN URLs
@@ -276,6 +290,13 @@ Commands:
   sls-update-index     Update SLS index with content field
   sls-get-logs         Get raw SLS logs
   sls-query-ips        Query IPs from SLS logs
+  sls-create-project   Create SLS project
+  sls-create-logstore  Create SLS logstore
+  sls-list-machine-group List SLS machine groups
+  sls-get-machine-group Get SLS machine group detail
+  sls-create-machine-group Create SLS machine group
+  sls-create-config    Create SLS logtail config
+  sls-apply-config     Apply config to machine group
 `)
 }
 
@@ -1742,5 +1763,128 @@ func (a App) SLSQueryIPs(args []string) error {
 	out, err := slsmod.QueryIPs(env, *project, *logstore, *from, *to, *query)
 	if err != nil { return err }
 	fmt.Println(out)
+	return nil
+}
+
+func (a App) SLSCreateProject(args []string) error {
+	fs := flag.NewFlagSet("sls-create-project", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	projectName := fs.String("name", "", "project name")
+	description := fs.String("desc", "", "project description")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*projectName) == "" { return errors.New("missing required args: --account, --name") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.CreateProject(env, *projectName, *description)
+	if err != nil { return err }
+	fmt.Println(out)
+	fmt.Printf("✅ Project %s created\n", *projectName)
+	return nil
+}
+
+func (a App) SLSCreateLogstore(args []string) error {
+	fs := flag.NewFlagSet("sls-create-logstore", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	logstoreName := fs.String("name", "", "logstore name")
+	ttl := fs.Int("ttl", 30, "log retention days")
+	shardCount := fs.Int("shards", 2, "shard count")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" || strings.TrimSpace(*logstoreName) == "" { return errors.New("missing required args: --account, --project, --name") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.CreateLogStore(env, *project, *logstoreName, *ttl, *shardCount)
+	if err != nil { return err }
+	fmt.Println(out)
+	fmt.Printf("✅ Logstore %s created in project %s\n", *logstoreName, *project)
+	return nil
+}
+
+func (a App) SLSListMachineGroup(args []string) error {
+	fs := flag.NewFlagSet("sls-list-machine-group", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" { return errors.New("missing required args: --account, --project") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.ListMachineGroup(env, *project)
+	if err != nil { return err }
+	fmt.Println(out)
+	return nil
+}
+
+func (a App) SLSGetMachineGroup(args []string) error {
+	fs := flag.NewFlagSet("sls-get-machine-group", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	machineGroupName := fs.String("name", "", "machine group name")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" || strings.TrimSpace(*machineGroupName) == "" { return errors.New("missing required args: --account, --project, --name") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.GetMachineGroup(env, *project, *machineGroupName)
+	if err != nil { return err }
+	fmt.Println(out)
+	return nil
+}
+
+func (a App) SLSCreateMachineGroup(args []string) error {
+	fs := flag.NewFlagSet("sls-create-machine-group", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	machineGroupName := fs.String("name", "", "machine group name")
+	machineList := fs.String("machines", "", "comma-separated machine IPs or identifiers")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" || strings.TrimSpace(*machineGroupName) == "" { return errors.New("missing required args: --account, --project, --name") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	machines := []string{}
+	if strings.TrimSpace(*machineList) != "" {
+		for _, m := range strings.Split(*machineList, ",") {
+			m = strings.TrimSpace(m)
+			if m != "" { machines = append(machines, m) }
+		}
+	}
+	out, err := slsmod.CreateMachineGroup(env, *project, *machineGroupName, machines)
+	if err != nil { return err }
+	fmt.Println(out)
+	fmt.Printf("✅ Machine group %s created in project %s\n", *machineGroupName, *project)
+	return nil
+}
+
+func (a App) SLSCreateConfig(args []string) error {
+	fs := flag.NewFlagSet("sls-create-config", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	configName := fs.String("name", "", "config name")
+	logPath := fs.String("path", "", "log file path (e.g., /data/wwwroot/admin.moddown.com/runtime/log)")
+	logPattern := fs.String("pattern", "*.log", "log file pattern (e.g., *.log)")
+	logstore := fs.String("logstore", "", "target logstore name")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" || strings.TrimSpace(*configName) == "" || strings.TrimSpace(*logPath) == "" || strings.TrimSpace(*logstore) == "" { return errors.New("missing required args: --account, --project, --name, --path, --logstore") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.CreateConfig(env, *project, *configName, *logPath, *logPattern, *logstore)
+	if err != nil { return err }
+	fmt.Println(out)
+	fmt.Printf("✅ Config %s created in project %s for logstore %s\n", *configName, *project, *logstore)
+	return nil
+}
+
+func (a App) SLSApplyConfig(args []string) error {
+	fs := flag.NewFlagSet("sls-apply-config", flag.ContinueOnError)
+	accountName := fs.String("account", "", "account name")
+	project := fs.String("project", "", "project name")
+	machineGroupName := fs.String("group", "", "machine group name")
+	configName := fs.String("config", "", "config name")
+	if err := fs.Parse(args); err != nil { return err }
+	if strings.TrimSpace(*accountName) == "" || strings.TrimSpace(*project) == "" || strings.TrimSpace(*machineGroupName) == "" || strings.TrimSpace(*configName) == "" { return errors.New("missing required args: --account, --project, --group, --config") }
+	env, err := envfile.Parse(a.Paths.EnvPath(*accountName))
+	if err != nil { return err }
+	out, err := slsmod.ApplyConfigToMachineGroup(env, *project, *machineGroupName, *configName)
+	if err != nil { return err }
+	fmt.Println(out)
+	fmt.Printf("✅ Config %s applied to machine group %s in project %s\n", *configName, *machineGroupName, *project)
 	return nil
 }
